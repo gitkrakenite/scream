@@ -5,6 +5,8 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Home from "./pages/Home";
 import Saved from "./pages/Saved";
+import Create from "./pages/Create";
+import SpecificIssue from "./pages/SpecificIssue";
 
 function App() {
   return (
@@ -16,6 +18,8 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/saved" element={<Saved />} />
+          <Route path="/new-issue" element={<Create />} />
+          <Route path="/issue/:id" element={<SpecificIssue />} />
         </Routes>
       </BrowserRouter>
     </div>

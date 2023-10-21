@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   AiOutlineBell,
@@ -16,14 +16,35 @@ import Reports from "../components/Reports";
 
 const Home = () => {
   const [toggleDrawer, setToggleDrawer] = useState(false);
-  let user = true;
+
+  // read from state
+  const [cartItemCount, setCartItemCount] = useState(0);
+  useEffect(() => {
+    // Function to count the number of items in localStorage
+    const countItemsInCart = () => {
+      try {
+        // Retrieve the existing cart items from localStorage
+        const cartItems = JSON.parse(localStorage.getItem("cart")) || [];
+        // Get the number of items in the cart
+        const itemCount = cartItems.length;
+        // Update the state with the item count
+        setCartItemCount(itemCount);
+      } catch (error) {
+        // Handle any errors that might occur during parsing or reading from localStorage
+        console.error("Error reading from localStorage:", error);
+      }
+    };
+
+    countItemsInCart(); // Call the function when the component mounts
+  }, []);
+
   return (
     <div>
       {/* wrapper */}
-      <div className=" w-[98%] sm:w-[90%] m-auto py-[3px] md:py-[1em] ">
+      <div className=" w-[100%] sm:w-[90%] m-auto py-[3px] md:py-[1em] ">
         {/* navbar */}
         <div
-          className="mb-[20px] my-[5px] p-[15px] bg-zinc-300 rounded-2xl z-20"
+          className="mb-[20px] my-[5px] p-[15px] bg-zinc-300 sm:rounded-2xl z-20"
           style={{
             // position: "-webkit-sticky",
             position: "sticky",
@@ -83,15 +104,7 @@ const Home = () => {
             </div>
           </div>
         </div>
-        {/* account */}
-        <div>
-          <p
-            className="text-end text-zinc-400 hover:text-zinc-600 cursor-pointer"
-            style={{ fontWeight: 600 }}
-          >
-            ACCOUNT
-          </p>
-        </div>
+
         {/* side drawer and content */}
         {/* sideDrawer */}
         {toggleDrawer && (
@@ -154,64 +167,19 @@ const Home = () => {
                       </p>
                     </Link>
                   </li>
-                  {/* <li
-                    className=" w-[80%] sm:w-[70%] pb-[4px] mb-[10px]"
-                    style={{ borderBottom: "2px solid #1c3b29" }}
-                  >
-                    <Link to="/trade" onClick={() => setToggleDrawer(false)}>
-                      <p
-                        className="text-zinc-500 hover:text-teal-800"
-                        style={{ fontWeight: 500 }}
-                      >
-                        Trade Now
-                      </p>
-                    </Link>
-                  </li>
                   <li
                     className=" w-[80%] sm:w-[70%] pb-[4px] mb-[10px]"
                     style={{ borderBottom: "2px solid #1c3b29" }}
                   >
-                    <Link to="/trade" onClick={() => setToggleDrawer(false)}>
+                    <Link to="/fununu" onClick={() => setToggleDrawer(false)}>
                       <p
                         className="text-zinc-500 hover:text-teal-800"
                         style={{ fontWeight: 500 }}
                       >
-                        Fununu
+                        Account
                       </p>
                     </Link>
                   </li>
-                  <li
-                    className=" w-[80%] sm:w-[70%] pb-[4px] mb-[10px]"
-                    style={{ borderBottom: "2px solid #1c3b29" }}
-                  >
-                    <Link
-                      to="/notifications"
-                      onClick={() => setToggleDrawer(false)}
-                      className="flex items-center justify-between"
-                    >
-                      <p
-                        className="text-zinc-500 hover:text-teal-800"
-                        style={{ fontWeight: 500 }}
-                      >
-                        Notifications
-                      </p>
-                      <p className="text-orange-600 pr-5">3</p>
-                    </Link>
-                  </li>
-
-                  <li
-                    className=" w-[80%] sm:w-[70%] pb-[4px] mb-[10px]"
-                    style={{ borderBottom: "2px solid #1c3b29" }}
-                  >
-                    <Link to="/terms" onClick={() => setToggleDrawer(false)}>
-                      <p
-                        className="text-zinc-500 hover:text-teal-800"
-                        style={{ fontWeight: 500 }}
-                      >
-                        Terms & Conditions
-                      </p>
-                    </Link>
-                  </li> */}
                 </ul>
                 <div>
                   <div className="">
@@ -250,7 +218,7 @@ const Home = () => {
         )}
         {/*  */}
         {/* main content */}
-        <div className="flex  gap-[20px] px-[10px] lg:px-[20px]">
+        <div className="flex  gap-[20px] px-[4px] lg:px-[20px]">
           <div className="flex-1 ">
             <Reports />
           </div>
