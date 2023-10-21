@@ -1,21 +1,30 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   AiOutlineBell,
   AiOutlineClose,
-  AiOutlineHeart,
   AiOutlineMail,
   AiOutlineMenu,
   AiOutlineMessage,
   AiOutlinePhone,
   AiOutlineSave,
-  AiOutlineUser,
 } from "react-icons/ai";
 import Logo from "../assets/Blogo.png";
 import Reports from "../components/Reports";
+import { useSelector } from "react-redux";
 
 const Home = () => {
   const [toggleDrawer, setToggleDrawer] = useState(false);
+
+  const { user } = useSelector((state) => state.auth);
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!user) {
+      navigate("/login");
+    }
+  }, [user, navigate]);
 
   // read from state
   const [cartItemCount, setCartItemCount] = useState(0);
@@ -218,7 +227,7 @@ const Home = () => {
         )}
         {/*  */}
         {/* main content */}
-        <div className="flex  gap-[20px] px-[4px] lg:px-[20px]">
+        <div className="flex gap-[20px] px-[4px] lg:px-[20px]">
           <div className="flex-1 ">
             <Reports />
           </div>

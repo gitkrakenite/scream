@@ -6,6 +6,8 @@ import Register from "./pages/Register";
 import Home from "./pages/Home";
 import Saved from "./pages/Saved";
 import Create from "./pages/Create";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import SpecificIssue from "./pages/SpecificIssue";
 
 function App() {
@@ -22,6 +24,7 @@ function App() {
           <Route path="/issue/:id" element={<SpecificIssue />} />
         </Routes>
       </BrowserRouter>
+      <ToastContainer />
     </div>
   );
 }

@@ -180,7 +180,7 @@ const Reports = () => {
             </div>
 
             {/*  */}
-            <div className=" overflow-x-scroll prompt ">
+            <div className=" overflow-x-scroll hide-scrollbar  ">
               <ul className=" w-[90vw] flex justify-start  overflow-x-scroll space-x-7  pb-3 ">
                 <li
                   className="cursor-pointer flex items-center gap-1 hover:text-teal-700"
@@ -229,11 +229,11 @@ const Reports = () => {
 
       {/* wrapper */}
 
-      <div className="mt-[1em]">
+      <div className="mt-[5px]">
         {/* pagination */}
         {!searchText && allReports.length > 0 && (
           <nav className="flex justify-center">
-            <ul className="flex gap-[2em] mt-[10px] px-[5px] py-[10px] items-center ">
+            <ul className="flex gap-[2em] mt-[5px] px-[5px] py-[10px] items-center ">
               {/* map */}
 
               <>
