@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   AiOutlineBell,
   AiOutlineClose,
@@ -180,7 +180,7 @@ const Home = () => {
                     className=" w-[80%] sm:w-[70%] pb-[4px] mb-[10px]"
                     style={{ borderBottom: "2px solid #1c3b29" }}
                   >
-                    <Link to="/fununu" onClick={() => setToggleDrawer(false)}>
+                    <Link to="/account" onClick={() => setToggleDrawer(false)}>
                       <p
                         className="text-zinc-500 hover:text-teal-800"
                         style={{ fontWeight: 500 }}

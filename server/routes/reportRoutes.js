@@ -13,6 +13,7 @@ const {
   fetchResolvedReports,
 } = require("../controllers/reportController");
 
+// baseUrl => /report/
 router.post("/create", createReport); //create report
 router.put("/edit/:id", updateSpecificReport); // edit report
 router.get("/all", fetchAllReports); // see all reports

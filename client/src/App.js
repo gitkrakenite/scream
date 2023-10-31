@@ -9,6 +9,8 @@ import Create from "./pages/Create";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import SpecificIssue from "./pages/SpecificIssue";
+import Account from "./pages/Account";
+import { useState } from "react";
 
 function App() {
   return (
@@ -22,6 +24,7 @@ function App() {
           <Route path="/saved" element={<Saved />} />
           <Route path="/new-issue" element={<Create />} />
           <Route path="/issue/:id" element={<SpecificIssue />} />
+          <Route path="/account" element={<Account />} />
         </Routes>
       </BrowserRouter>
       <ToastContainer />

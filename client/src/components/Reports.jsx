@@ -3,10 +3,14 @@ import {
   AiOutlineArrowUp,
   AiOutlineComment,
   AiOutlineLike,
+  AiOutlineSave,
   AiOutlineSearch,
 } from "react-icons/ai";
-import { MdBugReport } from "react-icons/md";
-import { Link } from "react-router-dom";
+import { MdBugReport, MdVerifiedUser } from "react-icons/md";
+import { BsFillPersonFill } from "react-icons/bs";
+import { CiLocationOn } from "react-icons/ci";
+import { FaRegSadCry } from "react-icons/fa";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import Masonry from "react-masonry-css";
 import { useEffect, useState } from "react";
 import "../masonry.css";
@@ -19,7 +23,22 @@ import { DummyCategory } from "../DummyData";
 import moment from "moment";
 
 const Reports = () => {
+  const { state } = useLocation();
+  useEffect(() => {
+    if (state && state.scrollPosition !== undefined) {
+      // Scroll to the previously saved position
+      window.scrollTo(0, state.scrollPosition);
+    }
+  }, [state]);
+
   const { user } = useSelector((state) => state.auth);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!user) {
+      navigate("/login");
+    }
+  }, [user, navigate]);
 
   const [allReports, setAllReports] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -46,10 +65,9 @@ const Reports = () => {
   const breakpointColumnsObj = {
     default: 4,
     3000: 5,
-    2000: 4,
-    1200: 3,
-    1000: 2,
-    500: 1,
+    2000: 3,
+    1200: 2,
+    700: 1,
   };
 
   //   pagination states
@@ -137,8 +155,36 @@ const Reports = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  // handle user backgroun colors
+  const getRandomColorClass = () => {
+    const colors = [
+      "bg-red-500",
+      "bg-blue-500",
+      "bg-green-700",
+      "bg-yellow-700",
+      "bg-orange-700",
+      "bg-purple-500",
+    ];
+    const randomIndex = Math.floor(Math.random() * colors.length);
+    return colors[randomIndex];
+  };
+
+  const [backgroundClass, setBackgroundClass] = useState(getRandomColorClass());
+
+  const changeBackgroundColor = () => {
+    setBackgroundClass(getRandomColorClass());
+  };
+
+  useEffect(() => {
+    const intervalId = setInterval(changeBackgroundColor, 5000);
+
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, []);
+
   return (
-    <div className="">
+    <div>
       {/* arrow to scroll to top */}
       {showArrow && (
         <div
@@ -277,7 +323,7 @@ const Reports = () => {
           </nav>
         )}
         {/* reports */}
-        <div>
+        <div className="mt-[15px]">
           {searchText ? (
             <>
               <div className="mb-[15px] text-zinc-400">
@@ -292,57 +338,87 @@ const Reports = () => {
                     columnClassName="my-masonry-grid_column"
                   >
                     {searchedResults?.map((item) => (
-                      <Link to={`/issue/${item._id}`} key={item._id}>
-                        <div key={item._id} className="flex-shrink-0 mb-3 mt-6">
-                          <div className="relative rounded-lg group ">
-                            <div className="overlay absolute inset-0 flex items-center justify-center opacity-100">
-                              <div
-                                className="bg-gradient-to-t
-                            from-transparent to-black opacity-75 w-full h-full rounded-md"
+                      <div
+                        key={item._id}
+                        className="bg-zinc-200 mb-[20px] sm:bg-zinc-100  p-2 rounded-lg"
+                      >
+                        <div>
+                          <Link to={`/issue/${item._id}`}>
+                            <div className="flex gap-[15px] items-center mb-[10px]">
+                              <p
+                                className={`w-10 h-10 flex items-center justify-center rounded-full ${backgroundClass} text-white`}
                               >
-                                {/* top stats */}
+                                {item.creator.substring(0, 2)}
+                              </p>
+                              <p className="text-zinc-900 font-bold text-md">
+                                {item.title.substring(0, 22)} ...
+                              </p>
+                            </div>
+
+                            <div className="flex gap-[10px] items-center justify-end mb-[10px]">
+                              <CiLocationOn />
+                              <p>{item.location}</p>
+                            </div>
+                            <div>
+                              <p className="mb-[10px]">
+                                {item.description.substring(0, 100)}...
+                              </p>
+
+                              <div className=" flex flex-col gap-[10px] mb-[10px]">
                                 <div>
-                                  <div className="absolute top-[20px] flex gap-[10%]  w-full justify-between px-2 ">
-                                    <div>
-                                      <p className="text-white">
-                                        #{item.category.substring(0, 17)}...
-                                      </p>
-                                    </div>
-                                    <div className="flex gap-[20px]">
-                                      <p className="text-white text-md flex items-center gap-[5px]">
-                                        <AiOutlineLike className="text-lg" />
-                                        <span>{item.likes?.length}</span>
-                                      </p>
-                                      <p className="text-white text-md flex items-center gap-[5px]">
-                                        <AiOutlineComment className="text-lg" />
-                                        <span>{item.comments?.length}</span>
-                                      </p>
-                                    </div>
+                                  <h2 className="mb-[5px] font-bold text-zinc-600">
+                                    Directed To
+                                  </h2>
+                                  <div className="flex gap-[10px] items-center">
+                                    <BsFillPersonFill />
+                                    <p>{item.fixer}</p>
                                   </div>
                                 </div>
 
-                                {/*  */}
+                                <div className="flex items-center gap-[10px] justify-between">
+                                  {item.resolved == "no" ? (
+                                    <div className="flex gap-[5px] items-center text-red-600">
+                                      <FaRegSadCry />
+                                      <p>Not Resolved</p>
+                                    </div>
+                                  ) : (
+                                    <div className="flex gap-[5px] items-center">
+                                      <MdVerifiedUser />
+                                      <p>Resolved</p>
+                                    </div>
+                                  )}
+                                  <div className="flex items-center gap-[10px]">
+                                    <AiOutlineComment className="text-2xl text-teal-700" />
+                                    <p>{item.comments.length}</p>
+                                  </div>
+                                  <div className="flex items-center gap-[10px]">
+                                    <AiOutlineArrowUp
+                                      className="text-2xl text-teal-700"
+                                      title="upvote"
+                                    />
+                                    <p>{item.likes.length}</p>
+                                  </div>
+                                </div>
                               </div>
                             </div>
-
-                            <img
-                              src={item.mainPhoto}
-                              alt=""
-                              className=" rounded-lg"
-                            />
-
-                            <div className="flex justify-between items-center text-zinc-700 mt-[5px]">
-                              <p className="text-zinc-900 font-bold text-sm">
-                                {item.title.substring(0, 14)} ...
-                              </p>
-                              <p className=" text-sm text-teal-700">
-                                {moment(item.createdAt).fromNow()}
-                              </p>
-                            </div>
-                          </div>
-                          {/*  */}
+                          </Link>
                         </div>
-                      </Link>
+
+                        <div className="flex justify-between items-center text-zinc-700 mt-[20px] ">
+                          <div className="flex gap-[20px] items-center">
+                            <p className=" text-sm text-teal-700">
+                              {moment(item.createdAt).fromNow()}
+                            </p>
+                          </div>
+                          <AiOutlineSave
+                            className="text-teal-800 text-2xl"
+                            onClick={() => console.log("saved")}
+                            title="save for later"
+                          />
+                        </div>
+
+                        {/*  */}
+                      </div>
                     ))}
                   </Masonry>
                 </div>
@@ -374,60 +450,87 @@ const Reports = () => {
                       columnClassName="my-masonry-grid_column"
                     >
                       {records?.map((item) => (
-                        <Link to={`/issue/${item._id}`} key={item._id}>
-                          <div
-                            key={item._id}
-                            className="flex-shrink-0 mb-3 mt-6"
-                          >
-                            <div className="relative rounded-lg group ">
-                              <div className="overlay absolute inset-0 flex items-center justify-center opacity-100">
-                                <div
-                                  className="bg-gradient-to-t
-                                from-transparent to-black opacity-75 w-full h-full rounded-md"
+                        <div
+                          key={item._id}
+                          className="bg-zinc-200 mb-[20px] sm:bg-zinc-100  p-2 rounded-lg"
+                        >
+                          <div>
+                            <Link to={`/issue/${item._id}`}>
+                              <div className="flex gap-[15px] items-center mb-[10px]">
+                                <p
+                                  className={`w-10 h-10 flex items-center justify-center rounded-full ${backgroundClass} text-white`}
                                 >
-                                  {/* top stats */}
+                                  {item.creator.substring(0, 2)}
+                                </p>
+                                <p className="text-zinc-900 font-bold text-md">
+                                  {item.title.substring(0, 22)} ...
+                                </p>
+                              </div>
+
+                              <div className="flex gap-[10px] items-center justify-end mb-[10px]">
+                                <CiLocationOn />
+                                <p>{item.location}</p>
+                              </div>
+                              <div>
+                                <p className="mb-[10px]">
+                                  {item.description.substring(0, 100)}...
+                                </p>
+
+                                <div className=" flex flex-col gap-[10px] mb-[10px]">
                                   <div>
-                                    <div className="absolute top-[20px] flex gap-[10%]  w-full justify-between px-2 ">
-                                      <div>
-                                        <p className="text-white">
-                                          #{item.category.substring(0, 17)}...
-                                        </p>
-                                      </div>
-                                      <div className="flex gap-[20px]">
-                                        <p className="text-white text-md flex items-center gap-[5px]">
-                                          <AiOutlineLike className="text-lg" />
-                                          <span>{item.likes?.length}</span>
-                                        </p>
-                                        <p className="text-white text-md flex items-center gap-[5px]">
-                                          <AiOutlineComment className="text-lg" />
-                                          <span>{item.comments?.length}</span>
-                                        </p>
-                                      </div>
+                                    <h2 className="mb-[5px] font-bold text-zinc-600">
+                                      Directed To
+                                    </h2>
+                                    <div className="flex gap-[10px] items-center">
+                                      <BsFillPersonFill />
+                                      <p>{item.fixer}</p>
                                     </div>
                                   </div>
 
-                                  {/*  */}
+                                  <div className="flex items-center gap-[10px] justify-between">
+                                    {item.resolved == "no" ? (
+                                      <div className="flex gap-[5px] items-center text-red-600">
+                                        <FaRegSadCry />
+                                        <p>Not Resolved</p>
+                                      </div>
+                                    ) : (
+                                      <div className="flex gap-[5px] items-center">
+                                        <MdVerifiedUser />
+                                        <p>Resolved</p>
+                                      </div>
+                                    )}
+                                    <div className="flex items-center gap-[10px]">
+                                      <AiOutlineComment className="text-2xl text-teal-700" />
+                                      <p>{item.comments.length}</p>
+                                    </div>
+                                    <div className="flex items-center gap-[10px]">
+                                      <AiOutlineArrowUp
+                                        className="text-2xl text-teal-700"
+                                        title="upvote"
+                                      />
+                                      <p>{item.likes.length}</p>
+                                    </div>
+                                  </div>
                                 </div>
                               </div>
-
-                              <img
-                                src={item.mainPhoto}
-                                alt=""
-                                className=" rounded-lg"
-                              />
-
-                              <div className="flex justify-between items-center text-zinc-700 mt-[5px]">
-                                <p className="text-zinc-900 font-bold text-sm">
-                                  {item.title.substring(0, 14)} ...
-                                </p>
-                                <p className=" text-sm text-teal-700">
-                                  {moment(item.createdAt).fromNow()}
-                                </p>
-                              </div>
-                            </div>
-                            {/*  */}
+                            </Link>
                           </div>
-                        </Link>
+
+                          <div className="flex justify-between items-center text-zinc-700 mt-[20px] ">
+                            <div className="flex gap-[20px] items-center">
+                              <p className=" text-sm text-teal-700">
+                                {moment(item.createdAt).fromNow()}
+                              </p>
+                            </div>
+                            <AiOutlineSave
+                              className="text-teal-800 text-2xl"
+                              onClick={() => console.log("saved")}
+                              title="save for later"
+                            />
+                          </div>
+
+                          {/*  */}
+                        </div>
                       ))}
                     </Masonry>
                   )}
