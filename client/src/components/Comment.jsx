@@ -21,9 +21,9 @@ const Comment = ({ item }) => {
 
       setLoadingComment(true);
 
-      let username = user.username;
+      let campusID = user.campusID;
       let id = product._id;
-      let commentData = { username, comment };
+      let commentData = { campusID, comment };
 
       await axios.post("/report/comment/" + id, commentData);
       setLoadingComment(false);
@@ -48,11 +48,7 @@ const Comment = ({ item }) => {
             <form onSubmit={() => handleComment(item)}>
               <div>
                 <label htmlFor="comment" className="flex items-center gap-8">
-                  <div className="w-[40px] h-[40px] bg-orange-700 rounded-full flex justify-center items-center text-zinc-200 text-xl">
-                    {user?.username.slice(0, 1)}
-                  </div>
-
-                  <p>Add A Comment</p>
+                  <p>Add A Comment Anonymously</p>
                 </label>
               </div>
               <div className="flex items-center pt-[20px] w-[100%]  gap-[10px] ">
@@ -97,11 +93,14 @@ const Comment = ({ item }) => {
         {item.comments.length >= 1 ? (
           <>
             {[...item.comments].reverse().map((item, index) => (
-              <div className="" key={index}>
+              <div className="" key={item._id}>
                 <div className=" block md:flex items-start md:items-center gap-[20px] mb-[16px] pb-[10px]">
-                  <p className="">
-                    <span className="text-emerald-700">{item.username}</span>
+                  <p
+                    className={`w-8 h-8 flex items-center justify-center rounded-full bg-teal-800 text-white`}
+                  >
+                    {item.campusID.substring(0, 2)}
                   </p>
+
                   <div className="flex flex-col md:flex-row justify-between  gap-[10px] md:gap-[40px] md:items-center">
                     <p className="text-zinc-700 text-md">{item.comment}</p>
                     <p className="text-zinc-400 text-sm">

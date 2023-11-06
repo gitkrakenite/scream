@@ -24,6 +24,9 @@ const Home = () => {
     if (!user) {
       navigate("/login");
     }
+    if (!user?.campusID) {
+      navigate("/login");
+    }
   }, [user, navigate]);
 
   // read from state
@@ -33,7 +36,7 @@ const Home = () => {
     const countItemsInCart = () => {
       try {
         // Retrieve the existing cart items from localStorage
-        const cartItems = JSON.parse(localStorage.getItem("cart")) || [];
+        const cartItems = JSON.parse(localStorage.getItem("issues")) || [];
         // Get the number of items in the cart
         const itemCount = cartItems.length;
         // Update the state with the item count
@@ -79,7 +82,7 @@ const Home = () => {
                     className="absolute bottom-[20px] left-[32px] z-[999]"
                     style={{ fontWeight: 700 }}
                   >
-                    1
+                    {cartItemCount}
                   </p>
                 </div>
               </Link>

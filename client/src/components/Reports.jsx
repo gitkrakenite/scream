@@ -382,9 +382,9 @@ const Reports = () => {
                                       <p>Not Resolved</p>
                                     </div>
                                   ) : (
-                                    <div className="flex gap-[5px] items-center">
-                                      <MdVerifiedUser />
-                                      <p>Resolved</p>
+                                    <div className="flex gap-[5px] items-center ">
+                                      <MdVerifiedUser className="text-green-700" />
+                                      <p className="text-green-700">Resolved</p>
                                     </div>
                                   )}
                                   <div className="flex items-center gap-[10px]">
@@ -494,7 +494,7 @@ const Reports = () => {
                                         <p>Not Resolved</p>
                                       </div>
                                     ) : (
-                                      <div className="flex gap-[5px] items-center">
+                                      <div className="flex gap-[5px] items-center text-green-700">
                                         <MdVerifiedUser />
                                         <p>Resolved</p>
                                       </div>

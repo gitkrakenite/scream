@@ -11,6 +11,7 @@ const {
   fetchSpecificReport,
   updateSpecificReport,
   fetchResolvedReports,
+  deleteAllReports,
 } = require("../controllers/reportController");
 
 // baseUrl => /report/
@@ -23,5 +24,6 @@ router.post("/comment/:id", commentOnReport); //comment on report
 router.post("/like/:id", likeReport); //like report
 router.post("/cat", fetchReportBasedOnSth); // fetch cat report
 router.post("/resolved", fetchResolvedReports); //resolved report
+router.delete("/", deleteAllReports); //delete all reports
 
 module.exports = router;

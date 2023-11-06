@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { AiOutlineArrowLeft } from "react-icons/ai";
 import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
@@ -10,10 +10,19 @@ import axios from "../axios";
 const Create = () => {
   const { user } = useSelector((state) => state.auth);
 
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!user?.campusID) {
+      navigate("/login");
+    }
+  }, [user, navigate]);
+
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("");
   const [description, setDescription] = useState("");
   const [mainPhoto, setMainPhoto] = useState("");
+  const [secPhoto, setSecPhoto] = useState("");
   const [location, setLocation] = useState("");
   const [fixer, setFixer] = useState("");
   const [searchTerms, setSearchTerms] = useState("");
@@ -48,25 +57,56 @@ const Create = () => {
     }
   };
 
+  // upload sec photo to cloudinary
+  const [loadingSecPhoto, setLoadingSecPhoto] = useState(false);
+  const postSecPhoto = async (pic) => {
+    setLoadingSecPhoto(true);
+    if (pic === null || undefined) {
+      toast.error("Please select photo");
+      return;
+    }
+    const data = new FormData();
+    data.append("file", pic);
+    data.append("upload_preset", "p2jnu3t2");
+    try {
+      setLoadingSecPhoto(true);
+      let res = await fetch(
+        "https://api.cloudinary.com/v1_1/ddqs3ukux/image/upload",
+        {
+          method: "POST",
+          body: data,
+        }
+      );
+      const urlData = await res.json();
+      setLoadingSecPhoto(false);
+      setSecPhoto(urlData.url);
+      toast.success("Uploaded Second Photo");
+    } catch (error) {
+      setLoadingSecPhoto(false);
+      toast.error("Error uploading Second Photo");
+    }
+  };
+
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
   const handleCreate = async (e) => {
     e.preventDefault();
     if (!title) return toast.error("title missing");
     if (!category) return toast.error("category missing");
     if (!description) return toast.error("description missing");
     if (!mainPhoto) return toast.error("photo missing");
+    if (!secPhoto) return toast.error("second photo missing");
     if (!location) return toast.error("specificAddress missing");
     if (!searchTerms) return toast.error("searchTerms missing");
     if (!searchTerms) return toast.error("searchTerms missing");
 
     try {
       setLoading(true);
-      let creator = user?.username;
+      let creator = user?.campusID;
       let dataToSend = {
         title,
         description,
         mainPhoto,
+        secPhoto,
         creator,
         category,
         fixer,
@@ -101,7 +141,7 @@ const Create = () => {
           </div>
         </div>
         {/* form */}
-        <div className="mt-[2em] w-full">
+        <div className="mt-[2em] pb-[1.3em] w-full">
           <form
             className=" w-[98%] sm:w-[80%] md:w-[65%] lg:w-[50%] m-auto"
             onSubmit={handleCreate}
@@ -148,7 +188,7 @@ const Create = () => {
                   htmlFor="mainPhoto"
                   className="flex items-center gap-[20px] flex-wrap"
                 >
-                  <p>Please Select Photo</p>
+                  <p>Please Select First Photo</p>
                   <div className="flex flex-col items-center">
                     {loadingPhoto ? (
                       <Spinner message="uploading ..." />
@@ -172,6 +212,41 @@ const Create = () => {
                   onChange={(e) => postPhoto(e.target.files[0])}
                   required
                   id="mainPhoto"
+                  className="hidden"
+                />
+              </div>
+            </div>
+            {/* upload second image */}
+            <div className="flex flex-col items-start gap-[20px] sm:gap-0 sm:flex-row sm:items-center mt-[20px] mb-[20px]  px-[5px] rounded-lg">
+              <div className="flex flex-col gap-2 mt-[20px]">
+                <label
+                  htmlFor="secPhoto"
+                  className="flex items-center gap-[20px] flex-wrap"
+                >
+                  <p>Please Select Second Photo</p>
+                  <div className="flex flex-col items-center">
+                    {loadingSecPhoto ? (
+                      <Spinner message="uploading ..." />
+                    ) : (
+                      <img
+                        src={
+                          secPhoto
+                            ? secPhoto
+                            : "https://pixel-share-25.netlify.app/assets/preview-35b286f0.png"
+                        }
+                        alt=""
+                        className="w-[100px] h-[100px] object-cover"
+                      />
+                    )}
+                  </div>
+                </label>
+                <input
+                  type="file"
+                  placeholder="Add Image"
+                  accept="image/*"
+                  onChange={(e) => postSecPhoto(e.target.files[0])}
+                  required
+                  id="secPhoto"
                   className="hidden"
                 />
               </div>

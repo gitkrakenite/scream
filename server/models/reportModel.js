@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const commentSchema = new mongoose.Schema(
   {
-    fullName: {
+    campusID: {
       type: String,
       required: true,
     },
@@ -15,7 +15,7 @@ const commentSchema = new mongoose.Schema(
 );
 
 const likeSchema = new mongoose.Schema({
-  fullName: {
+  campusID: {
     type: String,
     required: true,
   },
@@ -32,6 +32,10 @@ const reportSchema = new mongoose.Schema(
       required: true,
     },
     mainPhoto: {
+      type: String,
+      required: true,
+    },
+    secPhoto: {
       type: String,
       required: true,
     },

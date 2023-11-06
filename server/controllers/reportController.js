@@ -1,5 +1,5 @@
 const Report = require("../models/reportModel");
-const User = require("../models/reportModel");
+const User = require("../models/userModel");
 
 // create report
 const createReport = async (req, res) => {
@@ -9,6 +9,7 @@ const createReport = async (req, res) => {
     mainPhoto,
     creator,
     category,
+    secPhoto,
     fixer,
     location,
     searchTerms,
@@ -24,6 +25,7 @@ const createReport = async (req, res) => {
       title,
       description,
       mainPhoto,
+      secPhoto,
       creator,
       category,
       fixer,
@@ -132,6 +134,8 @@ const commentOnReport = async (req, res) => {
 
     // If the user doesn't exist, return an error
     if (!user) {
+      console.log(user);
+      console.log(campusID);
       return res.status(404).json({ error: "user not found" });
     }
 
@@ -218,6 +222,19 @@ const updateSpecificReport = async (req, res) => {
   }
 };
 
+const deleteAllReports = async (req, res, next) => {
+  try {
+    // Delete all reports
+    await Report.deleteMany({});
+    res.json({ message: "All reports have been deleted." });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ error: "An error occurred while deleting reports." });
+  }
+};
+
 module.exports = {
   createReport,
   fetchAllReports,
@@ -228,4 +245,5 @@ module.exports = {
   fetchSpecificReport,
   updateSpecificReport,
   fetchResolvedReports,
+  deleteAllReports,
 };

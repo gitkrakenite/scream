@@ -11,10 +11,11 @@ import "react-toastify/dist/ReactToastify.css";
 import SpecificIssue from "./pages/SpecificIssue";
 import Account from "./pages/Account";
 import { useState } from "react";
+import EditIssue from "./pages/EditIssue";
 
 function App() {
   return (
-    <div className="App">
+    <div className="bg-zinc-200 min-h-[100vh]">
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Splash />} />
@@ -24,6 +25,7 @@ function App() {
           <Route path="/saved" element={<Saved />} />
           <Route path="/new-issue" element={<Create />} />
           <Route path="/issue/:id" element={<SpecificIssue />} />
+          <Route path="/edit-issue/:id" element={<EditIssue />} />
           <Route path="/account" element={<Account />} />
         </Routes>
       </BrowserRouter>
