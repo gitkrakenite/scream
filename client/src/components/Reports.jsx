@@ -2,6 +2,7 @@ import {
   AiOutlineArrowRight,
   AiOutlineArrowUp,
   AiOutlineComment,
+  AiOutlineEye,
   AiOutlineLike,
   AiOutlineSave,
   AiOutlineSearch,
@@ -183,6 +184,22 @@ const Reports = () => {
     };
   }, []);
 
+  const handleAddViews = async (id) => {
+    try {
+      if (!user) {
+        navigate("/login");
+        return;
+      }
+
+      let campusID = user.campusID;
+      let viewsData = { campusID };
+
+      await axios.post("/report/view/" + id, viewsData);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <div>
       {/* arrow to scroll to top */}
@@ -340,7 +357,7 @@ const Reports = () => {
                     {searchedResults?.map((item) => (
                       <div
                         key={item._id}
-                        className="bg-zinc-200 mb-[20px] sm:bg-zinc-100  p-2 rounded-lg"
+                        className="mb-[20px] bg-zinc-100  p-2 rounded-lg"
                       >
                         <div>
                           <Link to={`/issue/${item._id}`}>
@@ -452,9 +469,9 @@ const Reports = () => {
                       {records?.map((item) => (
                         <div
                           key={item._id}
-                          className="bg-zinc-200 mb-[20px] sm:bg-zinc-100  p-2 rounded-lg"
+                          className=" mb-[20px] bg-zinc-100  p-2 rounded-lg"
                         >
-                          <div>
+                          <div onClick={() => handleAddViews(item._id)}>
                             <Link to={`/issue/${item._id}`}>
                               <div className="flex gap-[15px] items-center mb-[10px]">
                                 <p
@@ -487,28 +504,36 @@ const Reports = () => {
                                     </div>
                                   </div>
 
-                                  <div className="flex items-center gap-[10px] justify-between">
-                                    {item.resolved == "no" ? (
-                                      <div className="flex gap-[5px] items-center text-red-600">
-                                        <FaRegSadCry />
-                                        <p>Not Resolved</p>
-                                      </div>
-                                    ) : (
-                                      <div className="flex gap-[5px] items-center text-green-700">
-                                        <MdVerifiedUser />
-                                        <p>Resolved</p>
-                                      </div>
-                                    )}
-                                    <div className="flex items-center gap-[10px]">
-                                      <AiOutlineComment className="text-2xl text-teal-700" />
-                                      <p>{item.comments.length}</p>
+                                  <div className="flex items-center gap-[20px] flex-wrap justify-between">
+                                    <div>
+                                      {item.resolved == "no" ? (
+                                        <div className="flex gap-[5px] items-center text-red-600">
+                                          <FaRegSadCry />
+                                          <p>Not Resolved</p>
+                                        </div>
+                                      ) : (
+                                        <div className="flex gap-[5px] items-center text-green-700">
+                                          <MdVerifiedUser />
+                                          <p>Resolved</p>
+                                        </div>
+                                      )}
                                     </div>
-                                    <div className="flex items-center gap-[10px]">
-                                      <AiOutlineArrowUp
-                                        className="text-2xl text-teal-700"
-                                        title="upvote"
-                                      />
-                                      <p>{item.likes.length}</p>
+                                    <div className="flex gap-[25px] items-center">
+                                      <div className="flex items-center gap-[10px]">
+                                        <AiOutlineEye className="text-2xl text-teal-700" />
+                                        <p>{item.views.length}</p>
+                                      </div>
+                                      <div className="flex items-center gap-[10px]">
+                                        <AiOutlineComment className="text-2xl text-teal-700" />
+                                        <p>{item.comments.length}</p>
+                                      </div>
+                                      <div className="flex items-center gap-[10px]">
+                                        <AiOutlineArrowUp
+                                          className="text-2xl text-teal-700"
+                                          title="upvote"
+                                        />
+                                        <p>{item.likes.length}</p>
+                                      </div>
                                     </div>
                                   </div>
                                 </div>

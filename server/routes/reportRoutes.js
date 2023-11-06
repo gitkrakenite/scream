@@ -12,16 +12,21 @@ const {
   updateSpecificReport,
   fetchResolvedReports,
   deleteAllReports,
+  fetchAllMyReports,
+  AddViewOnReport,
 } = require("../controllers/reportController");
 
 // baseUrl => /report/
 router.post("/create", createReport); //create report
+
 router.put("/edit/:id", updateSpecificReport); // edit report
 router.get("/all", fetchAllReports); // see all reports
 router.delete("/delete/:id", deleteReport); // delete report
 router.get("/specific/:id", fetchSpecificReport); //specific report
+router.post("/mine", fetchAllMyReports); //my reports
 router.post("/comment/:id", commentOnReport); //comment on report
 router.post("/like/:id", likeReport); //like report
+router.post("/view/:id", AddViewOnReport); //add view on report
 router.post("/cat", fetchReportBasedOnSth); // fetch cat report
 router.post("/resolved", fetchResolvedReports); //resolved report
 router.delete("/", deleteAllReports); //delete all reports

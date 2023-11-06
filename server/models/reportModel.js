@@ -21,6 +21,13 @@ const likeSchema = new mongoose.Schema({
   },
 });
 
+const viewsSchema = new mongoose.Schema({
+  campusID: {
+    type: String,
+    required: true,
+  },
+});
+
 const reportSchema = new mongoose.Schema(
   {
     title: {
@@ -65,6 +72,7 @@ const reportSchema = new mongoose.Schema(
 
     comments: [commentSchema],
     likes: [likeSchema],
+    views: [viewsSchema],
   },
   { timestamps: true }
 );

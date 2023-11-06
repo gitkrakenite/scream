@@ -197,9 +197,63 @@ const likeReport = async (req, res) => {
   }
 };
 
+const AddViewOnReport = async (req, res) => {
+  try {
+    const { campusID } = req.body;
+
+    // Find the report item by ID
+    const report = await Report.findById(req.params.id);
+
+    // If the report doesn't exist, return an error
+    if (!report) {
+      return res.status(404).json({ error: "report not found" });
+    }
+
+    // Find if the username exists
+    const user = await User.findOne({ campusID });
+    // If the user doesn't exist, return an error
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // Check if the user has already viwes this report
+    const hasViewed = report.views.some((view) => view.campusID === campusID);
+
+    if (hasViewed) {
+      // If the user has already viewd it
+      res.status(200).json({ message: "Already viewed" });
+    } else {
+      // If the user hasn't viewed it yet, add their view
+      const newView = {
+        campusID,
+      };
+      report.views.push(newView);
+      await report.save();
+      res.status(201).json({ message: "View added successfully" });
+    }
+  } catch (error) {
+    res.status(500).json({ error });
+  }
+};
+
 const fetchSpecificReport = async (req, res) => {
   try {
     const report = await Report.findOne({ _id: req.params.id });
+    res.status(200).send(report);
+  } catch (error) {
+    res.status(500).send("Action Failed");
+  }
+};
+
+const fetchAllMyReports = async (req, res) => {
+  const { campusID } = req.body;
+
+  if (!campusID) {
+    return res.status(500).send("ID not sent");
+  }
+
+  try {
+    const report = await Report.findOne({ creator: campusID });
     res.status(200).send(report);
   } catch (error) {
     res.status(500).send("Action Failed");
@@ -246,4 +300,6 @@ module.exports = {
   updateSpecificReport,
   fetchResolvedReports,
   deleteAllReports,
+  fetchAllMyReports,
+  AddViewOnReport,
 };

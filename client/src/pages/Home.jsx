@@ -230,7 +230,7 @@ const Home = () => {
         )}
         {/*  */}
         {/* main content */}
-        <div className="flex gap-[20px] px-[4px] lg:px-[20px]">
+        <div className="flex gap-[20px] px-[10px] lg:px-[20px]">
           <div className="flex-1 ">
             <Reports />
           </div>
