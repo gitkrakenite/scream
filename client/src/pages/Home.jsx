@@ -12,6 +12,8 @@ import {
 import Logo from "../assets/Blogo.png";
 import Reports from "../components/Reports";
 import { useSelector } from "react-redux";
+import { toast } from "react-toastify";
+import axios from "../axios";
 
 const Home = () => {
   const [toggleDrawer, setToggleDrawer] = useState(false);
@@ -49,6 +51,41 @@ const Home = () => {
 
     countItemsInCart(); // Call the function when the component mounts
   }, []);
+
+  // fetch notification count
+  const [MyNotif, setMyNotif] = useState([]);
+  const [loadingNotif, setLoadingNotif] = useState(false);
+  const handleFetchNotification = async () => {
+    if (!user.campusID) {
+      navigate("/login");
+      return toast.error("Please Login");
+    }
+
+    try {
+      setLoadingNotif(true);
+      let campusID = user.campusID;
+      let dataToSend = { campusID };
+      const res = await axios.post("/notify/mine", dataToSend);
+
+      if (res && res.data) {
+        const notifications = Array.isArray(res.data) ? res.data : [res.data];
+        setMyNotif(notifications);
+        setLoadingNotif(false);
+      } else {
+        setMyNotif([]); // Set an empty array if no data is received
+        setLoadingNotif(false);
+        console.error("Invalid data format received:", res.data);
+      }
+    } catch (error) {
+      setLoadingNotif(false);
+      toast.error("Error Fetching Notifications");
+      console.error("Error fetching notifications:", error);
+    }
+  };
+
+  useEffect(() => {
+    handleFetchNotification();
+  }, [user]);
 
   return (
     <div>
@@ -90,14 +127,23 @@ const Home = () => {
                 <div className="relative">
                   <AiOutlineBell
                     className="text-3xl text-teal-800"
-                    title="Saved"
+                    title="Notifications"
                   />
-                  <p
-                    className="absolute bottom-[20px] left-[32px] z-[999]"
-                    style={{ fontWeight: 700 }}
-                  >
-                    3
-                  </p>
+                  {loadingNotif ? (
+                    <p
+                      className="absolute bottom-[20px] left-[32px] z-[999]"
+                      style={{ fontWeight: 700 }}
+                    >
+                      ..
+                    </p>
+                  ) : (
+                    <p
+                      className="absolute bottom-[20px] left-[32px] z-[999]"
+                      style={{ fontWeight: 700 }}
+                    >
+                      {MyNotif.length}
+                    </p>
+                  )}
                 </div>
               </Link>
 

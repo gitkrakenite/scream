@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import axios from "../axios";
 import moment from "moment";
 import Spinner from "./Spinner";
+import { AiOutlineDelete } from "react-icons/ai";
 
 const Comment = ({ item }) => {
   const { user } = useSelector((state) => state.auth);
@@ -25,9 +26,23 @@ const Comment = ({ item }) => {
       let id = product._id;
       let commentData = { campusID, comment };
 
+      // comment
       await axios.post("/report/comment/" + id, commentData);
+
+      if (user.campusID !== product.creator) {
+        // create notification
+        let sender = user.campusID;
+        let receiver = item.creator;
+        let message = comment;
+        let referID = id;
+        let notifyData = { sender, receiver, message, referID };
+
+        await axios.post("/notify/create", notifyData);
+      }
+
       setLoadingComment(false);
       setComment("");
+
       window.location.reload();
     } catch (error) {
       setLoadingComment(false);
@@ -35,8 +50,25 @@ const Comment = ({ item }) => {
     }
   };
 
+  const handleDeleteComment = async (commentID) => {
+    // /comment/:id/:commentId
+    if (!commentID) return;
+
+    try {
+      let id = item._id;
+      // console.log(commentID, id);
+      const response = await axios.delete(`/report/comment/${id}/${commentID}`);
+      if (response) {
+        toast.success("deleted");
+        window.location.reload();
+      }
+    } catch (error) {
+      toast.error("Failed");
+    }
+  };
+
   return (
-    <div>
+    <div className="w-full ">
       {/*  */}
       <>
         {!user ? (
@@ -86,27 +118,43 @@ const Comment = ({ item }) => {
       </>
       {/*  */}
       {/* show all comments */}
-      <div className="mt-[30px] max-h-[50vh] overflow-y-scroll prompt  p-[5px] rounded-lg">
+      <div className="mt-[30px] p-[5px] rounded-lg">
         {/* {console.log(item.comments)} */}
 
         {/* fetch comments from latest to earliest */}
         {item.comments.length >= 1 ? (
           <>
             {[...item.comments].reverse().map((item, index) => (
-              <div className="" key={item._id}>
-                <div className=" block md:flex items-start md:items-center gap-[20px] mb-[16px] pb-[10px]">
-                  <p
-                    className={`w-8 h-8 flex items-center justify-center rounded-full bg-teal-800 text-white`}
-                  >
-                    {item.campusID.substring(0, 2)}
-                  </p>
-
-                  <div className="flex flex-col md:flex-row justify-between  gap-[10px] md:gap-[40px] md:items-center">
-                    <p className="text-zinc-700 text-md">{item.comment}</p>
+              <div
+                key={item._id}
+                className="mb-[15px] bg-zinc-300 p-1"
+                style={{}}
+              >
+                <div className="flex mb-[10px] items-center justify-between">
+                  <div className="flex items-center gap-[20px]">
+                    <p
+                      className={`w-7 h-7 flex items-center text-sm justify-center rounded-full bg-teal-800 text-white`}
+                    >
+                      {item.campusID.substring(0, 2)}
+                    </p>
                     <p className="text-zinc-400 text-sm">
                       {moment(item.createdAt).fromNow()}
                     </p>
                   </div>
+
+                  {user?.campusID == item.campusID && (
+                    <p>
+                      <AiOutlineDelete
+                        className="text-2xl text-red-500 cursor-pointer"
+                        onClick={() => handleDeleteComment(item._id)}
+                      />
+                    </p>
+                  )}
+                </div>
+
+                <div>
+                  {/* <p style={{ wordWrap: "break-word" }}>{item.comment}</p> */}
+                  <p style={{ wordWrap: "break-word" }}>{item.comment}</p>
                 </div>
               </div>
             ))}

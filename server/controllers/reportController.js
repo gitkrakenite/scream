@@ -134,8 +134,8 @@ const commentOnReport = async (req, res) => {
 
     // If the user doesn't exist, return an error
     if (!user) {
-      console.log(user);
-      console.log(campusID);
+      // console.log(user);
+      // console.log(campusID);
       return res.status(404).json({ error: "user not found" });
     }
 
@@ -153,6 +153,40 @@ const commentOnReport = async (req, res) => {
     res.status(201).send(newComment);
   } catch (error) {
     res.status(500).json({ error: "Failed To Comment" });
+  }
+};
+
+const deleteCommentOnReport = async (req, res) => {
+  try {
+    const { commentId } = req.params;
+
+    // Find the post by ID
+    const report = await Report.findById(req.params.id);
+
+    // If the post doesn't exist, return an error
+    if (!report) {
+      return res.status(404).json({ error: "Report not found" });
+    }
+
+    // Find the index of the comment in the comments array
+    const commentIndex = report.comments.findIndex(
+      (comment) => comment._id == commentId
+    );
+
+    // If the comment doesn't exist, return an error
+    if (commentIndex === -1) {
+      return res.status(404).json({ error: "Comment not found" });
+    }
+
+    // Remove the comment from the comments array
+    report.comments.splice(commentIndex, 1);
+
+    // Save the updated post without the deleted comment
+    await report.save();
+
+    res.status(200).json({ message: "Comment deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to delete comment" });
   }
 };
 
@@ -302,4 +336,5 @@ module.exports = {
   deleteAllReports,
   fetchAllMyReports,
   AddViewOnReport,
+  deleteCommentOnReport,
 };

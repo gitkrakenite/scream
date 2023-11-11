@@ -171,12 +171,9 @@ const SpecificIssue = () => {
             <div className=" px-[10px] md:px-[3em] xl:px-[5em]">
               {singleIssue?.map((item) => (
                 <>
-                  <div
-                    key={item._id}
-                    className="flex flex-col sm:flex-row gap-[2em]"
-                  >
+                  <div key={item._id} className="flex flex-col  gap-[2em]">
                     {/* img side */}
-                    <div className="flex-[0.5] flex w-full justify-center">
+                    <div className=" flex w-full justify-center">
                       <div>
                         <div>
                           <img
@@ -207,7 +204,7 @@ const SpecificIssue = () => {
                     </div>
 
                     {/* text side */}
-                    <div className="flex-[0.5]">
+                    <div>
                       {/* options */}
                       <div className="flex justify-between mb-[1em]">
                         <div>
@@ -338,8 +335,7 @@ const SpecificIssue = () => {
                       </div>
                     </div>
                   </div>
-                  {/* RECOMMENDED */}
-                  <div className="mt-[2em]">{/* <p>RECOMMENDED</p> */}</div>
+                  {/*  */}
                 </>
               ))}
             </div>
