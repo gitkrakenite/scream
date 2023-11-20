@@ -136,7 +136,7 @@ const SpecificIssue = () => {
 
     if (isDelete) {
       try {
-        let response = await axios.delete("/report/" + id);
+        let response = await axios.delete("/report/delete/" + id);
         if (response) {
           toast.success("deleted");
           navigate("/home");

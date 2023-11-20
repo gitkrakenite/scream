@@ -14,6 +14,7 @@ import Reports from "../components/Reports";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import axios from "../axios";
+import Ads from "../components/Ads";
 
 const Home = () => {
   const [toggleDrawer, setToggleDrawer] = useState(false);
@@ -25,8 +26,7 @@ const Home = () => {
   useEffect(() => {
     if (!user) {
       navigate("/login");
-    }
-    if (!user?.campusID) {
+    } else if (!user.campusID) {
       navigate("/login");
     }
   }, [user, navigate]);
@@ -56,7 +56,7 @@ const Home = () => {
   const [MyNotif, setMyNotif] = useState([]);
   const [loadingNotif, setLoadingNotif] = useState(false);
   const handleFetchNotification = async () => {
-    if (!user.campusID) {
+    if (!user?.campusID) {
       navigate("/login");
       return toast.error("Please Login");
     }
@@ -212,7 +212,7 @@ const Home = () => {
                     </Link>
                   </li>
 
-                  <li
+                  {/* <li
                     className=" w-[80%] sm:w-[70%] pb-[4px] mb-[10px]"
                     style={{ borderBottom: "2px solid #1c3b29" }}
                   >
@@ -224,7 +224,7 @@ const Home = () => {
                         Fununu
                       </p>
                     </Link>
-                  </li>
+                  </li> */}
                   <li
                     className=" w-[80%] sm:w-[70%] pb-[4px] mb-[10px]"
                     style={{ borderBottom: "2px solid #1c3b29" }}
@@ -276,8 +276,11 @@ const Home = () => {
         )}
         {/*  */}
         {/* main content */}
-        <div className="flex gap-[20px] px-[10px] lg:px-[20px]">
-          <div className="flex-1 ">
+        <div className=" px-[10px] lg:px-[20px]">
+          <div>
+            <Ads />
+          </div>
+          <div>
             <Reports />
           </div>
         </div>

@@ -44,16 +44,16 @@ const Account = () => {
             </h2>
             <p className="text-teal-600">Only You can see this details</p>
             <div className="mt-[2em]">
-              <p>Your ID : {user.campusID}</p>
-              <p>Your Full Name : {user.fullName} </p>
-              <p>You are : {user.role}</p>
+              <p>Your ID : {user?.campusID}</p>
+              <p>Your Full Name : {user?.fullName} </p>
+              <p>You are : {user?.role}</p>
             </div>
           </div>
         </div>
         {/*  */}
         {/* Issues Stuff */}
         <div className="mt-[3em] mb-[2em]">
-          <MyReports />
+          {user?.campusID && <MyReports />}
         </div>
       </div>
     </div>

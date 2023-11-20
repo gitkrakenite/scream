@@ -13,6 +13,7 @@ import Account from "./pages/Account";
 import { useState } from "react";
 import EditIssue from "./pages/EditIssue";
 import Notifications from "./pages/Notifications";
+import Resolved from "./pages/Resolved";
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
           <Route path="/issue/:id" element={<SpecificIssue />} />
           <Route path="/edit-issue/:id" element={<EditIssue />} />
           <Route path="/account" element={<Account />} />
+          <Route path="/resolved" element={<Resolved />} />
           <Route path="/notifications" element={<Notifications />} />
         </Routes>
       </BrowserRouter>

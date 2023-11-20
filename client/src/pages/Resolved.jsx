@@ -1,68 +1,49 @@
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { IoChevronBackOutline } from "react-icons/io5";
+import axios from "../axios";
+import { toast } from "react-toastify";
+import { useSelector } from "react-redux";
 import {
-  AiOutlineArrowRight,
   AiOutlineArrowUp,
-  AiOutlineClose,
   AiOutlineComment,
   AiOutlineEye,
-  AiOutlineLike,
-  AiOutlineSave,
   AiOutlineSearch,
 } from "react-icons/ai";
-import { MdBugReport, MdVerifiedUser } from "react-icons/md";
-import { BsFillPersonFill } from "react-icons/bs";
-import { CiLocationOn } from "react-icons/ci";
-import { FaRegSadCry } from "react-icons/fa";
-import { Link, useLocation, useNavigate } from "react-router-dom";
 import Masonry from "react-masonry-css";
-import { useEffect, useState } from "react";
-import "../masonry.css";
-
-import { toast } from "react-toastify";
-import axios from "../axios";
-import Spinner from "./Spinner";
-import { useSelector } from "react-redux";
-import { DummyCategory } from "../DummyData";
+import { CiLocationOn } from "react-icons/ci";
+import { BsFillPersonFill } from "react-icons/bs";
+import { FaRegSadCry } from "react-icons/fa";
+import { MdVerifiedUser } from "react-icons/md";
 import moment from "moment";
-import { CiFilter } from "react-icons/ci";
+import Spinner from "../components/Spinner";
 
-const Reports = () => {
-  const { state } = useLocation();
-  useEffect(() => {
-    if (state && state.scrollPosition !== undefined) {
-      // Scroll to the previously saved position
-      window.scrollTo(0, state.scrollPosition);
-    }
-  }, [state]);
+const Resolved = () => {
+  const [allResolved, setAllResolved] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const { user } = useSelector((state) => state.auth);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (!user) {
-      navigate("/login");
-    }
-  }, [user, navigate]);
-
-  const [allReports, setAllReports] = useState([]);
-  const [loading, setLoading] = useState(false);
-
-  const handleFetchReports = async () => {
+  const handleFetchResolved = async () => {
     try {
       setLoading(true);
-      const response = await axios.get("/report/all");
+      let resolved = "yes";
+      let dataToSend = { resolved };
+      const response = await axios.post("/report/resolved", dataToSend);
       if (response) {
         setLoading(false);
-        setAllReports(response.data);
-        // console.log(response.data);
+        setAllResolved(response.data);
+        console.log(response.data);
       }
     } catch (error) {
       setLoading(false);
-      toast.error("Error Fetching Reports");
+      toast.error("Error Fetching Resolved");
     }
   };
 
   useEffect(() => {
-    handleFetchReports();
+    handleFetchResolved();
   }, []);
 
   const breakpointColumnsObj = {
@@ -78,8 +59,8 @@ const Reports = () => {
   const recordsPerPage = 9;
   const lastIndex = currentPage * recordsPerPage;
   const firstIndex = lastIndex - recordsPerPage;
-  const records = allReports?.slice(firstIndex, lastIndex);
-  const npage = Math.ceil(allReports?.length / recordsPerPage);
+  const records = allResolved?.slice(firstIndex, lastIndex);
+  const npage = Math.ceil(allResolved?.length / recordsPerPage);
   const numbers = [...Array(npage + 1).keys()].slice(1);
 
   const [start, setStart] = useState(1);
@@ -124,7 +105,7 @@ const Reports = () => {
 
     setsearchTimeout(
       setTimeout(() => {
-        const searchResults = allReports?.filter(
+        const searchResults = allResolved?.filter(
           (item) =>
             item.title.toLowerCase().includes(searchText.toLowerCase()) ||
             item.searchTerms.toLowerCase().includes(searchText.toLowerCase())
@@ -202,61 +183,6 @@ const Reports = () => {
     }
   };
 
-  // read from state
-
-  const [cartItemCount, setCartItemCount] = useState(0);
-
-  useEffect(() => {
-    // Function to count the number of items in localStorage
-    const countItemsInCart = () => {
-      try {
-        // Retrieve the existing cart items from localStorage
-        const cartItems = JSON.parse(localStorage.getItem("issues")) || [];
-        // Get the number of items in the cart
-        const itemCount = cartItems.length;
-        // Update the state with the item count
-        setCartItemCount(itemCount);
-      } catch (error) {
-        // Handle any errors that might occur during parsing or reading from localStorage
-        console.error("Error reading from localStorage:", error);
-      }
-    };
-
-    countItemsInCart(); // Call the function when the component mounts
-  }, []);
-
-  const [issueItemCount, setIssueItemCount] = useState(0);
-  const handleSave = async (issue) => {
-    // Retrieve the existing cart items from localStorage
-    const issueItems = JSON.parse(localStorage.getItem("issues")) || [];
-
-    // Check if the product already exists in the cart
-    const exisitingIssue = issueItems.find((item) => item._id === issue._id);
-
-    if (exisitingIssue) {
-      // Product already exists, return a message
-      toast.error("Already Saved");
-      return;
-    }
-
-    // Merge the product and extraData into a new object
-    const issueWithExtraData = { ...issue };
-
-    // Create a new cart with the existing items and the new product
-    const updatedCart = [...issueItems, issueWithExtraData];
-
-    // Update the cart items in localStorage
-    localStorage.setItem("issues", JSON.stringify(updatedCart));
-
-    // Update the cart item count in the parent component
-    setIssueItemCount((prevCount) => prevCount + 1);
-
-    toast.success(`${issue.title} saved`);
-    return;
-  };
-
-  const [showFilters, setShowFilters] = useState(false);
-
   return (
     <div>
       {/* arrow to scroll to top */}
@@ -268,156 +194,81 @@ const Reports = () => {
           <AiOutlineArrowUp />
         </div>
       )}
-
-      {/* {console.log(allReports)} */}
-
-      {/* search bar & categories */}
-      <div className=" w-full mt-[10px]">
-        {/* searchbar */}
-        <div className="w-full flex justify-center">
-          <form className=" w-[98%] sm:w-[70%] md:w-[60%] lg:w-[50%] xl:w-[40%] bg-zinc-300 flex gap-[5px] items-center p-[8px] rounded-xl">
-            <AiOutlineSearch className="text-xl" />
-            <input
-              type="text"
-              placeholder="Search"
-              className="bg-transparent outline-none w-full "
-              required
-              // maxLength={15}
-              // minLength={2}
-              value={searchText}
-              onChange={handleSearchChange}
-            />
-          </form>
-        </div>
-
-        {/*  */}
-      </div>
-
       {/* wrapper */}
-
-      <div>
-        {showFilters ? (
-          <div className="fixed z-[999] top-[7em] bg-teal-900 text-zinc-300 sm:text-zinc-400 p-[15px] rounded-xl">
-            <div className="flex justify-end">
-              <AiOutlineClose
-                className="text-xl cursor-pointer"
-                onClick={() => setShowFilters(false)}
-              />
-            </div>
-            <div className="mt-4">
-              {/*  */}
-              <div className="">
-                <ul className=" flex flex-col gap-[10px] justify-start  overflow-x-scroll  space-x-7  pb-3 ">
-                  <li
-                    className="cursor-pointer flex items-center gap-1 hover:text-zinc-200"
-                    onClick={handleFetchReports}
-                  ></li>
-
-                  <li
-                    className="cursor-pointer flex items-center gap-1 hover:text-zinc-200"
-                    onClick={() => {
-                      setShowFilters(false);
-                      handleFetchReports();
-                    }}
-                  >
-                    <MdBugReport />
-                    all
-                  </li>
-
-                  {DummyCategory?.map((item) => (
-                    <li
-                      key={item._id}
-                      className="cursor-pointer flex items-center gap-1 hover:text-zinc-200"
-                      onClick={async () => {
-                        setShowFilters(false);
-                        setLoading(true);
-                        let category = item.title;
-                        let dataToSend = { category };
-                        try {
-                          const response = await axios.post(
-                            "/report/cat",
-                            dataToSend
-                          );
-                          if (response) {
-                            setLoading(false);
-
-                            setAllReports(response.data);
-                            // console.log(response.data);
-                          }
-                        } catch (error) {
-                          setLoading(false);
-                          toast.error("Failed to find " + item.title);
-                        }
-                      }}
-                    >
-                      <MdBugReport />
-                      {item.title}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
+      <div className=" px-[10px] sm:px-[1em]  md:px-[3em] lg:px-[5em] pt-[1em]">
+        <div>
+          {/* top bar */}
+          <div>
+            <Link to="/home" className="flex items-center gap-[6px]">
+              <IoChevronBackOutline />
+              Back
+            </Link>
           </div>
-        ) : (
-          <>
-            {!searchText && (
-              <p
-                onClick={() => setShowFilters(true)}
-                className="text-teal-800 cursor-pointer mt-[16px] "
-              >
-                <CiFilter className="text-4xl" />
-              </p>
-            )}
-          </>
-        )}
-
-        <div className="mt-[5px]">
+          {/* searchbar */}
+          <div className="w-full flex justify-center">
+            <form className=" w-[98%] sm:w-[70%] md:w-[60%] lg:w-[50%] xl:w-[40%] bg-zinc-300 flex gap-[5px] items-center p-[8px] rounded-xl">
+              <AiOutlineSearch className="text-xl" />
+              <input
+                type="text"
+                placeholder="Search"
+                className="bg-transparent outline-none w-full "
+                required
+                // maxLength={15}
+                // minLength={2}
+                value={searchText}
+                onChange={handleSearchChange}
+              />
+            </form>
+          </div>
           {/* pagination */}
-          {!searchText && allReports.length > 0 && (
-            <nav className="flex justify-center">
-              <ul className="flex gap-[2em] mt-[5px] px-[5px] py-[10px] items-center ">
-                {/* map */}
+          <div>
+            {!searchText && allResolved.length > 0 && (
+              <nav className="flex justify-center">
+                <ul className="flex gap-[2em] mt-[5px] px-[5px] py-[10px] items-center ">
+                  {/* map */}
 
-                <>
-                  <li>
-                    <a href="#" onClick={prevPage} className="text-zinc-800">
-                      <p className="text-zinc-500 font-bold hover:text-zinc-900">
-                        Prev
-                      </p>
-                    </a>
-                  </li>
-                  <li className="flex gap-[10px] ">
-                    {numbers.slice(start - 1, end).map((item, index) => (
-                      <li
-                        key={index}
-                        className={`normal-nav ${
-                          currentPage === item && "active-nav"
-                        }`}
-                      >
-                        <a
-                          href="#"
-                          onClick={() => {
-                            handleClick(item);
-                            changeCurrentPage(item);
-                          }}
+                  <>
+                    <li>
+                      <a href="#" onClick={prevPage} className="text-zinc-800">
+                        <p className="text-zinc-500 font-bold hover:text-zinc-900">
+                          Prev
+                        </p>
+                      </a>
+                    </li>
+                    <li className="flex gap-[10px] ">
+                      {numbers.slice(start - 1, end).map((item, index) => (
+                        <li
+                          key={index}
+                          className={`normal-nav ${
+                            currentPage === item && "active-nav"
+                          }`}
                         >
-                          <p className="">{item}</p>
-                        </a>
-                      </li>
-                    ))}
-                  </li>
+                          <a
+                            href="#"
+                            onClick={() => {
+                              handleClick(item);
+                              changeCurrentPage(item);
+                            }}
+                          >
+                            <p className="">{item}</p>
+                          </a>
+                        </li>
+                      ))}
+                    </li>
 
-                  <li>
-                    <a href="#" onClick={nextPage}>
-                      <p className="text-zinc-500 font-bold hover:text-zinc-900">
-                        Next
-                      </p>
-                    </a>
-                  </li>
-                </>
-              </ul>
-            </nav>
-          )}
+                    <li>
+                      <a href="#" onClick={nextPage}>
+                        <p className="text-zinc-500 font-bold hover:text-zinc-900">
+                          Next
+                        </p>
+                      </a>
+                    </li>
+                  </>
+                </ul>
+              </nav>
+            )}
+          </div>
+          {/* data */}
           {/* reports */}
           <div className="mt-[15px]">
             {searchText ? (
@@ -516,11 +367,11 @@ const Reports = () => {
                                 {moment(item.createdAt).fromNow()}
                               </p>
                             </div>
-                            <AiOutlineSave
+                            {/* <AiOutlineSave
                               className="text-teal-800 text-2xl"
                               onClick={() => handleSave(item)}
                               title="save for later"
-                            />
+                            /> */}
                           </div>
 
                           {/*  */}
@@ -648,11 +499,11 @@ const Reports = () => {
                                   {moment(item.createdAt).fromNow()}
                                 </p>
                               </div>
-                              <AiOutlineSave
+                              {/* <AiOutlineSave
                                 className="text-teal-800 text-2xl"
                                 onClick={() => handleSave(item)}
                                 title="save for later"
-                              />
+                              /> */}
                             </div>
 
                             {/*  */}
@@ -665,12 +516,12 @@ const Reports = () => {
               </>
             )}
           </div>
+          {/*  */}
         </div>
       </div>
-
-      {/* end wrapper */}
+      {/*  */}
     </div>
   );
 };
 
-export default Reports;
+export default Resolved;

@@ -15,7 +15,7 @@ const Notifications = () => {
   const [MyNotif, setMyNotif] = useState([]);
   const [loadingNotif, setLoadingNotif] = useState(false);
   const handleFetchNotification = async () => {
-    if (!user.campusID) {
+    if (!user?.campusID) {
       navigate("/login");
       return toast.error("Please Login");
     }

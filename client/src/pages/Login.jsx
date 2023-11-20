@@ -26,7 +26,7 @@ const Login = () => {
       toast.error("Also Check Network");
     }
 
-    if (user || isSuccess) {
+    if (user?.campusID) {
       navigate("/home");
       // toast.success("Welcome Back");
     }
@@ -70,7 +70,7 @@ const Login = () => {
           </Link>
         </div>
         {/* form */}
-        <div className="mt-[1.8em]">
+        <div className="mt-[2em]">
           <form
             className=" w-[98%] sm:w-[75%]  md:w-[60%] lg:w-[50%] m-auto"
             onSubmit={handleLogin}
